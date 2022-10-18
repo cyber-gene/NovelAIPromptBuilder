@@ -25,4 +25,4 @@ jobs:
     - name: Publish to Netlify
       uses: netlify/actions/cli@master
       with:
-        args: deploy --dir=dist/wwwroot --prod
+        args: deploy --dir=dist/wwwroot --prod --auth ${NETLIFY_AUTH_TOKEN} --site ${NETLIFY_SITE_ID}
