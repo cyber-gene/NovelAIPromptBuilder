@@ -10,6 +10,7 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    environment: NETLIFY_DEPLOY
 
     steps:
     - uses: actions/checkout@v3
@@ -23,9 +24,5 @@ jobs:
       run: dotnet publish -c Release --no-build -o dist
     - name: Publish to Netlify
       uses: netlify/actions/cli@master
-      env:
-        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
       with:
         args: deploy --dir=dist/wwwroot --prod
-        secrets: '["NETLIFY_AUTH_TOKEN", "NETLIFY_SITE_ID"]'
