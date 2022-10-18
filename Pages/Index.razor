@@ -1,7 +1,135 @@
-﻿@page "/"
+﻿@using NovelAIPromptBuilder.Models
+@page "/"
 
-<PageTitle>Index</PageTitle>
+<PageTitle>NovelAI prompt builder</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>NovelAI prompt builder</h1>
 
-Welcome to your new app.
+<div>
+    <label class="form-label" for="prompt">prompt</label>
+    <textarea class="form-input" id="prompt">@_prompt</textarea>
+</div>
+
+<div>
+    @if (_tags.Count == 0)
+    {
+        <button type="button" @onclick="() => AddTag()">Add tag</button>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">タグ</th>
+                    <th scope="col">強調</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in _tags.Select((value, index) => new { value, index }))
+                {
+                    <tr>
+                        <input type="hidden" @bind-value="item.value.Id" />
+                        <td>
+                            <input class="form-input" type="text" id="word" @bind-value="item.value.Word"
+                        @oninput="e => OnWordChanging(item.value.Id, e)" />
+                        </td>
+                        <td>
+                            <input type="number" id="EmphasisLevel" @bind-value="item.value.EmphasisLevel"
+                        @oninput="e => OnEmphasisChanging(item.value.Id, e)" min="0" />
+                        </td>
+                        <td>
+                            @if (item.index != 0)
+                            {
+                                <button class="btn" type="button" @onclick="() => MoveUp(item.value)">up</button>
+                            }
+                        </td>
+                        <td>
+                            @if (item.index != _tags.Count() - 1)
+                            {
+                                <button class="btn" type="button" @onclick="() => MoveDown(item.value)">down</button>
+                            }
+                        </td>
+                        <td>
+                            <button class="btn" type="button" @onclick="() => AddTag(item.value)">add</button>
+                        </td>
+                        <td>
+                            <button class="btn" type="button" @onclick="() => RemoveTag(item.value)">remove</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+    private string _prompt { get; set; } = string.Empty;
+    private List<Tag> _tags { get; set; } = new List<Tag>();
+
+    private void AddTag()
+    {
+        var newTag = new Tag();
+        _tags.Add(newTag);
+    }
+
+    private void AddTag(Tag tag)
+    {
+        var newTag = new Tag();
+        _tags.Insert(_tags.IndexOf(tag) + 1, newTag);
+        StateHasChanged();
+    }
+
+    private void RemoveTag(Tag target)
+    {
+        _tags.Remove(target);
+        StateHasChanged();
+    }
+
+    private void OnWordChanging(Guid id, ChangeEventArgs e)
+    {
+        var target = _tags.FirstOrDefault(m => m.Id == id);
+        target.Word = e.Value.ToString();
+
+        UpdatePrompt();
+    }
+
+    private void OnEmphasisChanging(Guid id, ChangeEventArgs e)
+    {
+        var target = _tags.FirstOrDefault(m => m.Id == id);
+        target.EmphasisLevel = int.Parse(e.Value.ToString());
+
+        UpdatePrompt();
+    }
+
+    private void MoveUp(Tag target)
+    {
+        var idx = _tags.IndexOf(target);
+
+        _tags.Remove(target);
+        _tags.Insert(idx - 1, target);
+
+        UpdatePrompt();
+    }
+
+    private void MoveDown(Tag target)
+    {
+        var idx = _tags.IndexOf(target);
+        _tags.Remove(target);
+        _tags.Insert(idx, target);
+    }
+
+    private void UpdatePrompt()
+    {
+        _prompt = string.Empty;
+        foreach (var tag in _tags)
+        {
+            if (string.IsNullOrWhiteSpace(tag.Word))
+            {
+                continue;
+            }
+            _prompt += $"{new string('{', tag.EmphasisLevel)}{tag.Word}{new string('}', tag.EmphasisLevel)}, ";
+        }
+        StateHasChanged();
+    }
+}
