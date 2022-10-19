@@ -19,7 +19,7 @@ footer {
     left: 0;
     bottom: 0;
     width: calc(100% - 10px);
-    height: 3vh;
+    height: 50px;
     padding-left: 10px;
     background-color: #0f111e;
     color: #cdcdcd;
