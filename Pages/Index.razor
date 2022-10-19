@@ -67,6 +67,16 @@
     private string _prompt { get; set; } = string.Empty;
     private List<Tag> _tags { get; set; } = new List<Tag>();
 
+    protected override Task OnInitializedAsync()
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            _tags.Add(new() { });
+        }
+
+        return base.OnInitializedAsync();
+    }
+
     private void AddTag()
     {
         var newTag = new Tag();
