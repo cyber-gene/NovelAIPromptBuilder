@@ -1,14 +1,33 @@
 ﻿@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
-html, body {
+html {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    position: relative;
+    margin: 0;
+    min-height: 100%;
     background-color: #191B31;
     color: #e6e6e6;
 }
 
+body {
+    padding: 10px;
+    overflow: none;
+}
+
+footer {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: calc(100% - 10px);
+    height: 3vh;
+    padding-left: 10px;
+    background-color: #0f111e;
+    color: #cdcdcd;
+}
+
 input, textarea {
     background: rgb(14, 15, 33);
-    color: white;
+    color: #e6e6e6;
     border: 1px solid rgb(34, 37, 63);
     border-radius: 3px 0px 0px 3px;
 }
@@ -20,6 +39,10 @@ input[type="number"]::-webkit-inner-spin-button{
     color: rgb(245, 243, 194);
     border: 1px solid rgb(245, 243, 194);
     border-radius: 3px;
+}
+
+a {
+    color: #cdcdcd;
 }
 
 #blazor-error-ui {
