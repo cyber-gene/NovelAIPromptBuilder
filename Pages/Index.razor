@@ -94,7 +94,7 @@
     private void RemoveTag(Tag target)
     {
         _tags.Remove(target);
-        StateHasChanged();
+        UpdatePrompt();
     }
 
     private void OnWordChanging(Guid id, ChangeEventArgs e)
