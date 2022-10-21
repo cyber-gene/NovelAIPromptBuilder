@@ -43,14 +43,20 @@ textarea.prompt {
     width: 50em;
 }
 
-button,
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button{
+.button-area {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    justify-items: center;
+}
+
+button {
     background-color: rgb(19, 21, 44);
     color: rgb(245, 243, 194);
     border: 1px solid rgb(245, 243, 194);
     border-radius: 3px;
     cursor: pointer;
+    min-width: 3em;
+    height: 1.8em;
 }
 
 input#word {
@@ -59,11 +65,23 @@ input#word {
 
 input#EmphasisLevel {
     width: 5em;
-    text-align: right;
+    text-align: center;
 }
 
 a {
     color: #cdcdcd;
+}
+
+table {
+    border: none;
+}
+
+tr.body:hover {
+    background-color: #323664;
+}
+
+td {
+    padding: 0.2em 0.2em 0.2em 0.2em;
 }
 
 #blazor-error-ui {
