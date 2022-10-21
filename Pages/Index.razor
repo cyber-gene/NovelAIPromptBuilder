@@ -6,7 +6,9 @@
 <h1>NovelAI prompt builder</h1>
 <div>
     <label class="form-label" for="prompt">prompt</label>
-    <textarea class="form-input" id="prompt">@_prompt</textarea>
+    <textarea class="prompt" id="prompt" @bind="_prompt"></textarea>
+    <button class="btn" type="button" @onclick="() => ImportPrompt()">Import</button>
+    <button class="btn" type="button" @onclick="() => Clear()">Clear</button>
 </div>
 
 <div>
@@ -140,5 +142,32 @@
             _prompt += $"{new string('{', tag.EmphasisLevel)}{tag.Word}{new string('}', tag.EmphasisLevel)}, ";
         }
         StateHasChanged();
+    }
+
+    private void ImportPrompt()
+    {
+        _tags.Clear();
+        var tags = _prompt.Split(",");
+
+        foreach (var tag in tags)
+        {
+            if (string.IsNullOrWhiteSpace(tag))
+            {
+                continue;
+            }
+
+            var t = new Tag
+            {
+                Word = tag.Trim().Replace("{", "").Replace("}", ""),
+                EmphasisLevel = tag.Count(c => c == '{')
+            };
+            _tags.Add(t);
+        }
+    }
+
+    private void Clear()
+    {
+        _tags.Clear();
+        _prompt = "";
     }
 }
