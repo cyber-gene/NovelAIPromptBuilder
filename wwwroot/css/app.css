@@ -32,6 +32,11 @@ input, textarea {
     border-radius: 3px 0px 0px 3px;
 }
 
+textarea.prompt {
+    height: 2rem;
+    width: 500px;
+}
+
 button,
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button{
