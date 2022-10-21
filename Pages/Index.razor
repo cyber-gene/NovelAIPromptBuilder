@@ -7,8 +7,8 @@
 <div class="prompt-area">
     <label class="form-label" for="prompt">prompt</label>
     <textarea class="prompt" id="prompt" @bind="_prompt"></textarea>
-    <button class="btn" type="button" @onclick="() => ImportPrompt()">Import</button>
-    <button class="btn" type="button" @onclick="() => Clear()">Clear</button>
+    <button class="btn" type="button" @onclick="() => ImportPrompt()" tabindex="-1">Import</button>
+    <button class="btn" type="button" @onclick="() => Clear()" tabindex="-1">Clear</button>
 </div>
 
 <div>
@@ -29,7 +29,7 @@
             <tbody>
                 @foreach (var item in _tags.Select((value, index) => new { value, index }))
                 {
-                    <tr>
+                    <tr class="body">
                         <input type="hidden" @bind-value="item.value.Id" />
                         <td>
                             <input class="form-input" type="text" id="word" @bind-value="item.value.Word"
@@ -37,25 +37,33 @@
                         </td>
                         <td>
                             <input type="number" id="EmphasisLevel" @bind-value="item.value.EmphasisLevel"
-                        @oninput="e => OnEmphasisChanging(item.value.Id, e)" min="0" />
+                        @oninput="e => OnEmphasisChanging(item.value.Id, e)" min="0" tabindex="-1" />
                         </td>
                         <td>
-                            @if (item.index != 0)
-                            {
-                                <button class="btn" type="button" @onclick="() => MoveUp(item.value)">up</button>
-                            }
-                        </td>
-                        <td>
-                            @if (item.index != _tags.Count() - 1)
-                            {
-                                <button class="btn" type="button" @onclick="() => MoveDown(item.value)">down</button>
-                            }
-                        </td>
-                        <td>
-                            <button class="btn" type="button" @onclick="() => AddTag(item.value)">add</button>
-                        </td>
-                        <td>
-                            <button class="btn" type="button" @onclick="() => RemoveTag(item.value)">remove</button>
+                            <div class="button-area">
+                                <div>
+                                    @if (item.index != 0)
+                                    {
+                                        <button class="btn" type="button" @onclick="() => MoveUp(item.value)"
+                                tabindex="-1">up</button>
+                                    }
+                                </div>
+                                <div>
+                                    @if (item.index != _tags.Count() - 1)
+                                    {
+                                        <button class="btn" type="button" @onclick="() => MoveDown(item.value)"
+                                tabindex="-1">down</button>
+                                    }
+                                </div>
+                                <div>
+                                    <button class="btn" type="button" @onclick="() => AddTag(item.value)"
+                                tabindex="-1">add</button>
+                                </div>
+                                <div>
+                                    <button class="btn" type="button" @onclick="() => RemoveTag(item.value)"
+                                tabindex="-1">remove</button>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                 }
