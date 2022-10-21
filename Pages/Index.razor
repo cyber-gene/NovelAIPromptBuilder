@@ -5,13 +5,13 @@
 
 <h1>NovelAI prompt builder</h1>
 <div class="prompt-area">
-    <label class="form-label" for="prompt">prompt</label>
-    <textarea class="prompt" id="prompt" @bind="_prompt"></textarea>
+    <textarea class="prompt" id="prompt" @bind="_prompt"
+        placeholder="Enter youe prompt and inport / Enter your tags below. "></textarea>
     <button class="btn" type="button" @onclick="() => ImportPrompt()" tabindex="-1">Import</button>
     <button class="btn" type="button" @onclick="() => Clear()" tabindex="-1">Clear</button>
 </div>
 
-<div>
+<div class="tag-area">
     @if (_tags.Count == 0)
     {
         <button type="button" @onclick="() => AddTag()">Add tag</button>
@@ -33,7 +33,7 @@
                         <input type="hidden" @bind-value="item.value.Id" />
                         <td>
                             <input class="form-input" type="text" id="word" @bind-value="item.value.Word"
-                        @oninput="e => OnWordChanging(item.value.Id, e)" />
+                        @oninput="e => OnWordChanging(item.value.Id, e)" placeholder="Enter your tag" />
                         </td>
                         <td>
                             <input type="number" id="EmphasisLevel" @bind-value="item.value.EmphasisLevel"
