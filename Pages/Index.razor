@@ -21,8 +21,8 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th scope="col">タグ</th>
-                    <th scope="col">強調</th>
+                    <th scope="col">Tag</th>
+                    <th scope="col">Strength</th>
                     <th></th>
                 </tr>
             </thead>
@@ -36,8 +36,8 @@
                         @oninput="e => OnWordChanging(item.value.Id, e)" placeholder="Enter your tag" />
                         </td>
                         <td>
-                            <input type="number" id="EmphasisLevel" @bind-value="item.value.EmphasisLevel"
-                        @oninput="e => OnEmphasisChanging(item.value.Id, e)" min="0" tabindex="-1" />
+                            <input type="number" id="StrengthLevel" @bind-value="item.value.StrengthLevel"
+                        @oninput="e => OnEmphasisChanging(item.value.Id, e)" tabindex="-1" />
                         </td>
                         <td>
                             <div class="button-area">
@@ -116,7 +116,7 @@
     private void OnEmphasisChanging(Guid id, ChangeEventArgs e)
     {
         var target = _tags.FirstOrDefault(m => m.Id == id);
-        target.EmphasisLevel = int.Parse(e.Value.ToString());
+        target.StrengthLevel = int.Parse(e.Value.ToString());
 
         UpdatePrompt();
     }
@@ -147,7 +147,18 @@
             {
                 continue;
             }
-            _prompt += $"{new string('{', tag.EmphasisLevel)}{tag.Word}{new string('}', tag.EmphasisLevel)}, ";
+
+            char[] brackets;
+            if (tag.StrengthLevel >= 0)
+            {
+                brackets = new char[] { '{', '}' };
+            }
+            else
+            {
+                brackets = new char[] { '[', ']' };
+            }
+
+            _prompt += $"{new string(brackets[0], Math.Abs(tag.StrengthLevel))}{tag.Word}{new string(brackets[1], Math.Abs(tag.StrengthLevel))}, ";
         }
         StateHasChanged();
     }
@@ -167,7 +178,7 @@
             var t = new Tag
             {
                 Word = tag.Trim().Replace("{", "").Replace("}", ""),
-                EmphasisLevel = tag.Count(c => c == '{')
+                StrengthLevel = tag.Count(c => c == '{')
             };
             _tags.Add(t);
         }
