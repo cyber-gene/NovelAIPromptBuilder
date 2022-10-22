@@ -177,8 +177,8 @@
 
             var t = new Tag
             {
-                Word = tag.Trim().Replace("{", "").Replace("}", ""),
-                StrengthLevel = tag.Count(c => c == '{')
+                Word = tag.Trim().Replace("{", "").Replace("}", "").Replace("[", "").Replace("]", ""),
+                StrengthLevel = tag.Any(c => c == '{') ? tag.Count(c => c == '{') : tag.Count(c => c == '[') * -1
             };
             _tags.Add(t);
         }
