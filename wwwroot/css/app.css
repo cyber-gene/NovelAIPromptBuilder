@@ -100,6 +100,11 @@ td {
     padding: 0.2em 0.2em 0.2em 0.2em;
 }
 
+.cell {
+    display: grid;
+    justify-content: center;
+}
+
 span.footer-text {
     padding-right: 1em;
 }
