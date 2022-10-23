@@ -21,6 +21,7 @@
         <table class="table">
             <thead>
                 <tr>
+                    <th scope="col">Enabled</th>
                     <th scope="col">Tag</th>
                     <th scope="col">Strength</th>
                     <th></th>
@@ -32,12 +33,21 @@
                     <tr class="body">
                         <input type="hidden" @bind-value="item.value.Id" />
                         <td>
-                            <input class="form-input" type="text" id="word" @bind-value="item.value.Word"
-                        @oninput="e => OnWordChanging(item.value.Id, e)" placeholder="Enter your tag" />
+                            <div class="cell">
+                                <input type="checkbox" id="word-enabled" checked="@item.value.Enabled" @oninput="e => OnWordEnableChanging(item.value.Id, e)" />
+                            </div>
                         </td>
                         <td>
-                            <input type="number" id="StrengthLevel" @bind-value="item.value.StrengthLevel"
-                        @oninput="e => OnEmphasisChanging(item.value.Id, e)" tabindex="-1" />
+                            <div class="cell">
+                                <input class="form-input" type="text" id="word" @bind-value="item.value.Word"
+                                    @oninput="e => OnWordChanging(item.value.Id, e)" placeholder="Enter your tag" />
+                        </div>
+                        </td>
+                        <td>
+                            <div class="cell">
+                                <input type="number" id="StrengthLevel" @bind-value="item.value.StrengthLevel"
+                                    @oninput="e => OnEmphasisChanging(item.value.Id, e)" tabindex="-1" />
+                        </div
                         </td>
                         <td>
                             <div class="button-area">
@@ -52,16 +62,16 @@
                                     @if (item.index != _tags.Count() - 1)
                                     {
                                         <button class="btn" type="button" @onclick="() => MoveDown(item.value)"
-                                tabindex="-1">down</button>
+                                            tabindex="-1">down</button>
                                     }
                                 </div>
                                 <div>
                                     <button class="btn" type="button" @onclick="() => AddTag(item.value)"
-                                tabindex="-1">add</button>
+                                        tabindex="-1">add</button>
                                 </div>
                                 <div>
                                     <button class="btn" type="button" @onclick="() => RemoveTag(item.value)"
-                                tabindex="-1">remove</button>
+                                        tabindex="-1">remove</button>
                                 </div>
                             </div>
                         </td>
@@ -121,6 +131,14 @@
         UpdatePrompt();
     }
 
+    private void OnWordEnableChanging(Guid id, ChangeEventArgs e)
+    {
+        var target = _tags.FirstOrDefault(m => m.Id == id);
+        target.Enabled = bool.Parse(e.Value.ToString());
+
+        UpdatePrompt();
+    }
+
     private void MoveUp(Tag target)
     {
         var idx = _tags.IndexOf(target);
@@ -143,7 +161,7 @@
         _prompt = string.Empty;
         foreach (var tag in _tags)
         {
-            if (string.IsNullOrWhiteSpace(tag.Word))
+            if (!tag.Enabled || string.IsNullOrWhiteSpace(tag.Word))
             {
                 continue;
             }
@@ -177,6 +195,7 @@
 
             var t = new Tag
             {
+                Enabled = true,
                 Word = tag.Trim().Replace("{", "").Replace("}", "").Replace("[", "").Replace("]", ""),
                 StrengthLevel = tag.Any(c => c == '{') ? tag.Count(c => c == '{') : tag.Count(c => c == '[') * -1
             };
