@@ -109,6 +109,39 @@ span.footer-text {
     padding-right: 1em;
 }
 
+.file-drop-zone {
+    position: relative;
+    border: dashed 2px transparent;
+    border-radius: 6px;
+    transition: border linear 0.2s;
+}
+
+.file-drop-zone.hover {
+    border: dashed 2px var(--mud-palette-secondary);
+}
+
+.file-drop-zone::after {
+    content: "Drop and import prompt from file";
+    font-size: 24px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background-color: #191B31;
+    color: rgb(245, 243, 194);
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity ease 0.2s;
+    pointer-events: none;
+}
+
+.file-drop-zone.hover::after {
+    opacity: 0.8;
+}
+
 #blazor-error-ui {
     background: lightyellow;
     bottom: 0;

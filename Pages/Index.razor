@@ -1,13 +1,16 @@
-﻿@using NovelAIPromptBuilder.Models
+﻿@using Toolbelt.Blazor.FileDropZone
+@using NovelAIPromptBuilder.Models
 @page "/"
 
 <PageTitle>NovelAI prompt builder</PageTitle>
+
+<FileDropZone class="file-drop-zone">
 
 <h1>NovelAI prompt builder</h1>
 <div class="prompt-area">
     <textarea class="prompt" id="prompt" @bind="_prompt"
         placeholder="Enter your prompt and inport / Enter your tags below. "></textarea>
-    <button class="btn" type="button" @onclick="() => ImportPrompt()" tabindex="-1">Import</button>
+    <button class="btn" type="button" @onclick="() => Import()" tabindex="-1">Import</button>
     <button class="btn" type="button" @onclick="() => Clear()" tabindex="-1">Clear</button>
 </div>
 
@@ -82,6 +85,9 @@
     }
 </div>
 
+<InputFile OnChange="OnInputFileChange" style="display: none;" />
+
+</FileDropZone>
 @code {
     private string _prompt { get; set; } = string.Empty;
     private List<Tag> _tags { get; set; } = new List<Tag>();
@@ -181,10 +187,15 @@
         StateHasChanged();
     }
 
-    private void ImportPrompt()
+    private void Import()
+    {
+        ImportPrompt(_prompt);
+    }
+
+    private void ImportPrompt(string prompt)
     {
         _tags.Clear();
-        var tags = _prompt.Split(",");
+        var tags = prompt.Split(",");
 
         foreach (var tag in tags)
         {
@@ -207,5 +218,13 @@
     {
         _tags.Clear();
         _prompt = "";
+    }
+
+    private void OnInputFileChange(InputFileChangeEventArgs args)
+    {
+        var fileName = Path.GetFileNameWithoutExtension(args.File.Name);
+        var tags = fileName.Split(',');
+        _prompt = string.Join(",", tags.SkipLast(1));
+        ImportPrompt(_prompt);
     }
 }
