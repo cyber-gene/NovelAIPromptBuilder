@@ -8,14 +8,14 @@
 
 <h1>NovelAI prompt builder</h1>
 <div class="prompt-area">
-    <textarea class="prompt" id="prompt" @bind="_prompt"
+    <textarea class="prompt" id="prompt" @bind="Prompt"
         placeholder="Enter your prompt and inport / Enter your tags below. "></textarea>
     <button class="btn" type="button" @onclick="() => Import()" tabindex="-1">Import</button>
     <button class="btn" type="button" @onclick="() => Clear()" tabindex="-1">Clear</button>
 </div>
 
 <div class="tag-area">
-    @if (_tags.Count == 0)
+    @if (Tags.Count == 0)
     {
         <button type="button" @onclick="() => AddTag()">Add tag</button>
     }
@@ -31,7 +31,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in _tags.Select((value, index) => new { value, index }))
+                @foreach (var item in Tags.Select((value, index) => new { value, index }))
                 {
                     <tr class="body">
                         <input type="hidden" @bind-value="item.value.Id" />
@@ -62,7 +62,7 @@
                                     }
                                 </div>
                                 <div>
-                                    @if (item.index != _tags.Count() - 1)
+                                    @if (item.index != Tags.Count() - 1)
                                     {
                                         <button class="btn" type="button" @onclick="() => MoveDown(item.value)"
                                             tabindex="-1">down</button>
@@ -89,14 +89,14 @@
 
 </FileDropZone>
 @code {
-    private string _prompt { get; set; } = string.Empty;
-    private List<Tag> _tags { get; set; } = new List<Tag>();
+    private string Prompt { get; set; } = string.Empty;
+    private List<Tag> Tags { get; set; } = new List<Tag>();
 
     protected override Task OnInitializedAsync()
     {
-        for (int i = 0; i < 5; i++)
+        for (var i = 0; i < 5; i++)
         {
-            _tags.Add(new() { });
+            Tags.Add(new() { });
         }
 
         return base.OnInitializedAsync();
@@ -105,25 +105,25 @@
     private void AddTag()
     {
         var newTag = new Tag();
-        _tags.Add(newTag);
+        Tags.Add(newTag);
     }
 
     private void AddTag(Tag tag)
     {
         var newTag = new Tag();
-        _tags.Insert(_tags.IndexOf(tag) + 1, newTag);
+        Tags.Insert(Tags.IndexOf(tag) + 1, newTag);
         StateHasChanged();
     }
 
     private void RemoveTag(Tag target)
     {
-        _tags.Remove(target);
+        Tags.Remove(target);
         UpdatePrompt();
     }
 
     private void OnWordChanging(Guid id, ChangeEventArgs e)
     {
-        var target = _tags.FirstOrDefault(m => m.Id == id);
+        var target = Tags.FirstOrDefault(m => m.Id == id);
         target.Word = e.Value.ToString();
 
         UpdatePrompt();
@@ -131,7 +131,7 @@
 
     private void OnEmphasisChanging(Guid id, ChangeEventArgs e)
     {
-        var target = _tags.FirstOrDefault(m => m.Id == id);
+        var target = Tags.FirstOrDefault(m => m.Id == id);
         target.StrengthLevel = int.Parse(e.Value.ToString());
 
         UpdatePrompt();
@@ -139,7 +139,7 @@
 
     private void OnWordEnableChanging(Guid id, ChangeEventArgs e)
     {
-        var target = _tags.FirstOrDefault(m => m.Id == id);
+        var target = Tags.FirstOrDefault(m => m.Id == id);
         target.Enabled = bool.Parse(e.Value.ToString());
 
         UpdatePrompt();
@@ -147,54 +147,41 @@
 
     private void MoveUp(Tag target)
     {
-        var idx = _tags.IndexOf(target);
+        var idx = Tags.IndexOf(target);
 
-        _tags.Remove(target);
-        _tags.Insert(idx - 1, target);
+        Tags.Remove(target);
+        Tags.Insert(idx - 1, target);
 
         UpdatePrompt();
     }
 
     private void MoveDown(Tag target)
     {
-        var idx = _tags.IndexOf(target);
-        _tags.Remove(target);
-        _tags.Insert(idx, target);
+        var idx = Tags.IndexOf(target);
+        Tags.Remove(target);
+        Tags.Insert(idx, target);
     }
 
     private void UpdatePrompt()
     {
-        _prompt = string.Empty;
-        foreach (var tag in _tags)
+        Prompt = string.Empty;
+        foreach (var tag in Tags.Where(tag => tag.Enabled && !string.IsNullOrWhiteSpace(tag.Word)))
         {
-            if (!tag.Enabled || string.IsNullOrWhiteSpace(tag.Word))
-            {
-                continue;
-            }
+            var brackets = tag.StrengthLevel >= 0 ? new[] { '{', '}' } : new[] { '[', ']' };
 
-            char[] brackets;
-            if (tag.StrengthLevel >= 0)
-            {
-                brackets = new char[] { '{', '}' };
-            }
-            else
-            {
-                brackets = new char[] { '[', ']' };
-            }
-
-            _prompt += $"{new string(brackets[0], Math.Abs(tag.StrengthLevel))}{tag.Word}{new string(brackets[1], Math.Abs(tag.StrengthLevel))}, ";
+            Prompt += $"{new string(brackets[0], Math.Abs(tag.StrengthLevel))}{tag.Word}{new string(brackets[1], Math.Abs(tag.StrengthLevel))}, ";
         }
         StateHasChanged();
     }
 
     private void Import()
     {
-        ImportPrompt(_prompt);
+        ImportPrompt(Prompt);
     }
 
     private void ImportPrompt(string prompt)
     {
-        _tags.Clear();
+        Tags.Clear();
         var tags = prompt.Split(",");
 
         foreach (var tag in tags)
@@ -210,21 +197,21 @@
                 Word = tag.Trim().Replace("{", "").Replace("}", "").Replace("[", "").Replace("]", ""),
                 StrengthLevel = tag.Any(c => c == '{') ? tag.Count(c => c == '{') : tag.Count(c => c == '[') * -1
             };
-            _tags.Add(t);
+            Tags.Add(t);
         }
     }
 
     private void Clear()
     {
-        _tags.Clear();
-        _prompt = "";
+        Tags.Clear();
+        Prompt = "";
     }
 
     private void OnInputFileChange(InputFileChangeEventArgs args)
     {
         var fileName = Path.GetFileNameWithoutExtension(args.File.Name);
         var tags = fileName.Split(',');
-        _prompt = string.Join(",", tags.SkipLast(1));
-        ImportPrompt(_prompt);
+        Prompt = string.Join(",", tags.SkipLast(1));
+        ImportPrompt(Prompt);
     }
 }
