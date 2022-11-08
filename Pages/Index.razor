@@ -1,4 +1,4 @@
-@using Toolbelt.Blazor.FileDropZone
+﻿@using Toolbelt.Blazor.FileDropZone
 @using NovelAIPromptBuilder.Models
 @using NovelAIPromptParser
 @page "/"
@@ -10,15 +10,15 @@
 <h1>NovelAI prompt builder</h1>
 <div class="prompt-area">
     <textarea class="prompt" id="prompt" @bind="Prompt"
-        placeholder="Enter your prompt and inport / Enter your tags below. "></textarea>
-    <button class="btn" type="button" @onclick="() => Import()" tabindex="-1">Import</button>
-    <button class="btn" type="button" @onclick="() => Clear()" tabindex="-1">Clear</button>
+        placeholder="Enter your prompt and import / Enter your tags below. "></textarea>
+    <button class="btn" type="button" @onclick="Import" tabindex="-1">Import</button>
+    <button class="btn" type="button" @onclick="Clear" tabindex="-1">Clear</button>
 </div>
 
 <div class="tag-area">
     @if (Tags.Count == 0)
     {
-        <button type="button" @onclick="() => AddTag()">Add tag</button>
+        <button type="button" @onclick="AddTag">Add tag</button>
     }
     else
     {
@@ -97,7 +97,7 @@
     {
         for (var i = 0; i < 5; i++)
         {
-            Tags.Add(new() { });
+            Tags.Add(new Tag());
         }
 
         return base.OnInitializedAsync();
@@ -125,7 +125,7 @@
     private void OnWordChanging(Guid id, ChangeEventArgs e)
     {
         var target = Tags.FirstOrDefault(m => m.Id == id);
-        target.Word = e.Value.ToString();
+        if (target != null) target.Word = e.Value?.ToString();
 
         UpdatePrompt();
     }
@@ -133,7 +133,7 @@
     private void OnEmphasisChanging(Guid id, ChangeEventArgs e)
     {
         var target = Tags.FirstOrDefault(m => m.Id == id);
-        target.StrengthLevel = int.Parse(e.Value.ToString());
+        if (target != null) target.StrengthLevel = int.Parse(e.Value?.ToString() ?? "0");
 
         UpdatePrompt();
     }
@@ -141,7 +141,7 @@
     private void OnWordEnableChanging(Guid id, ChangeEventArgs e)
     {
         var target = Tags.FirstOrDefault(m => m.Id == id);
-        target.Enabled = bool.Parse(e.Value.ToString());
+        if (target != null) target.Enabled = bool.Parse(e.Value?.ToString() ?? "true");
 
         UpdatePrompt();
     }

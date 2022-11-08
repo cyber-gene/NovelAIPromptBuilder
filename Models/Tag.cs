@@ -5,7 +5,7 @@ namespace NovelAIPromptBuilder.Models
     {
         public Guid Id { get; set; }
         public bool Enabled { get; set; } = true;
-        public string Word { get; set; } = string.Empty;
+        public string? Word { get; set; } = string.Empty;
         public string Translated { get; set; } = string.Empty;
         public int StrengthLevel { get; set; } = 0;
 
