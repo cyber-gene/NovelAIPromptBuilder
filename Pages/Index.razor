@@ -1,5 +1,6 @@
-﻿@using Toolbelt.Blazor.FileDropZone
+@using Toolbelt.Blazor.FileDropZone
 @using NovelAIPromptBuilder.Models
+@using NovelAIPromptParser
 @page "/"
 
 <PageTitle>NovelAI prompt builder</PageTitle>
@@ -182,22 +183,17 @@
     private void ImportPrompt(string prompt)
     {
         Tags.Clear();
-        var tags = prompt.Split(",");
+
+        var tags = Parser.DeserializePrompt(prompt);
 
         foreach (var tag in tags)
         {
-            if (string.IsNullOrWhiteSpace(tag))
-            {
-                continue;
-            }
-
-            var t = new Tag
+            Tags.Add(new Tag
             {
                 Enabled = true,
-                Word = tag.Trim().Replace("{", "").Replace("}", "").Replace("[", "").Replace("]", ""),
-                StrengthLevel = tag.Any(c => c == '{') ? tag.Count(c => c == '{') : tag.Count(c => c == '[') * -1
-            };
-            Tags.Add(t);
+                Word = tag.Word,
+                StrengthLevel = tag.Strength
+            });
         }
     }
 
