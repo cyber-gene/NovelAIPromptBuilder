@@ -38,7 +38,7 @@
                         <input type="hidden" @bind-value="item.value.Id" />
                         <td>
                             <div class="cell">
-                                <input type="checkbox" id="word-enabled" checked="@item.value.Enabled" @oninput="e => OnWordEnableChanging(item.value.Id, e)" />
+                                <input type="checkbox" id="word-enabled" tabindex="-1" checked="@item.value.Enabled" @oninput="e => OnWordEnableChanging(item.value.Id, e)" />
                             </div>
                         </td>
                         <td>
