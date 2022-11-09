@@ -7,31 +7,31 @@
 
 <FileDropZone class="file-drop-zone">
 
-<h1>NovelAI prompt builder</h1>
-<div class="prompt-area">
-    <textarea class="prompt" id="prompt" @bind="Prompt"
+    <h1>NovelAI prompt builder</h1>
+    <div class="prompt-area">
+        <textarea class="prompt" id="prompt" @bind="Prompt"
         placeholder="Enter your prompt and import / Enter your tags below. "></textarea>
-    <button class="btn" type="button" @onclick="Import" tabindex="-1">Import</button>
-    <button class="btn" type="button" @onclick="Clear" tabindex="-1">Clear</button>
-</div>
+        <button class="btn" type="button" @onclick="Import" tabindex="-1">Import</button>
+        <button class="btn" type="button" @onclick="Clear" tabindex="-1">Clear</button>
+    </div>
 
-<div class="tag-area">
-    @if (Tags.Count == 0)
-    {
-        <button type="button" @onclick="AddTag">Add tag</button>
-    }
-    else
-    {
-        <table class="table">
-            <thead>
+    <div class="tag-area">
+        @if (Tags.Count == 0)
+        {
+            <button type="button" @onclick="AddTag">Add tag</button>
+        }
+        else
+        {
+            <table class="table">
+                <thead>
                 <tr>
                     <th scope="col">Enabled</th>
                     <th scope="col">Tag</th>
                     <th scope="col">Strength</th>
                     <th></th>
                 </tr>
-            </thead>
-            <tbody>
+                </thead>
+                <tbody>
                 @foreach (var item in Tags.Select((value, index) => new { value, index }))
                 {
                     <tr class="body">
@@ -44,8 +44,8 @@
                         <td>
                             <div class="cell">
                                 <input class="form-input" type="text" id="word" @bind-value="item.value.Word"
-                                    @oninput="e => OnWordChanging(item.value.Id, e)" placeholder="Enter your tag" />
-                        </div>
+                                       @oninput="e => OnWordChanging(item.value.Id, e)" placeholder="Enter your tag" />
+                            </div>
                         </td>
                         <td>
                             <div class="cell">
@@ -59,48 +59,60 @@
                                     @if (item.index != 0)
                                     {
                                         <button class="btn" type="button" @onclick="() => MoveUp(item.value)"
-                                tabindex="-1">up</button>
+                                                tabindex="-1">up</button>
                                     }
                                 </div>
                                 <div>
                                     @if (item.index != Tags.Count() - 1)
                                     {
                                         <button class="btn" type="button" @onclick="() => MoveDown(item.value)"
-                                            tabindex="-1">down</button>
+                                                tabindex="-1">down</button>
                                     }
                                 </div>
                                 <div>
                                     <button class="btn" type="button" @onclick="() => AddTag(item.value)"
-                                        tabindex="-1">add</button>
+                                            tabindex="-1">add</button>
                                 </div>
                                 <div>
                                     <button class="btn" type="button" @onclick="() => RemoveTag(item.value)"
-                                        tabindex="-1">remove</button>
+                                            tabindex="-1">remove</button>
                                 </div>
                             </div>
                         </td>
                     </tr>
                 }
-            </tbody>
-        </table>
-    }
-</div>
-
-<InputFile OnChange="OnInputFileChange" style="display: none;" />
+                </tbody>
+            </table>
+        }
+    </div>
+    
+    <InputFile id="uploadFile" OnChange="OnInputFileChange" style="display: none;" />
 
 </FileDropZone>
+
 @code {
+    [Inject]
+    public IJSRuntime JSRuntime { get; set; }
     private string Prompt { get; set; } = string.Empty;
     private List<Tag> Tags { get; set; } = new List<Tag>();
+    private DotNetObjectReference<Index>? dotnetHelper;
 
     protected override Task OnInitializedAsync()
     {
+        
         for (var i = 0; i < 5; i++)
         {
             Tags.Add(new Tag());
         }
 
         return base.OnInitializedAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        dotnetHelper = DotNetObjectReference.Create(this);
+        await JSRuntime.InvokeVoidAsync("PromptHelpers.setDotNetHelper", dotnetHelper);
+        
     }
 
     private void AddTag()
@@ -203,11 +215,20 @@
         Prompt = "";
     }
 
-    private void OnInputFileChange(InputFileChangeEventArgs args)
+    private async Task OnInputFileChange(InputFileChangeEventArgs args)
     {
-        var fileName = Path.GetFileNameWithoutExtension(args.File.Name);
-        var tags = fileName.Split(',');
-        Prompt = string.Join(",", tags.SkipLast(1));
+        await JSRuntime.InvokeAsync<string>("loadFile");
+    }
+    
+
+    [JSInvokable]
+    public void FileToPrompt(string image)
+    {
+        var data = image.Split(',');
+        var ms = new MemoryStream(Convert.FromBase64String(data[1]));
+        var r = Parser.ParseImage(ms);
+        Prompt = r.Prompt;
         ImportPrompt(Prompt);
+        StateHasChanged();
     }
 }

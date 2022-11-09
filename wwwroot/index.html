@@ -2,22 +2,55 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <title>NovelAI prompt builder</title>
-    <base href="/" />
-    <link href="css/app.css" rel="stylesheet" />
+    <base href="/"/>
+    <link href="css/app.css" rel="stylesheet"/>
 </head>
 
 <body>
-    <div id="app">Loading...</div>
+<div id="app">Loading...</div>
 
-    <div id="blazor-error-ui">
-        An unhandled error has occurred.
-        <a href="" class="reload">Reload</a>
-        <a class="dismiss">🗙</a>
-    </div>
-    <script src="_framework/blazor.webassembly.js"></script>
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>
+<script src="_framework/blazor.webassembly.js"></script>
+<script>
+    window.loadFile = () => {
+        const input = document.getElementById('uploadFile');
+        const reader = new FileReader();
+
+        reader.addEventListener('load', function () {
+            PromptHelpers.fileToPrompt(reader.result);
+        }, false);
+
+        if (input) {
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    class PromptHelpers {
+        static dotNetHelper;
+
+        static setDotNetHelper(value) {
+            PromptHelpers.dotNetHelper = value;
+        }
+
+        static async fileToPrompt(fileData) {
+            await PromptHelpers.dotNetHelper.invokeMethodAsync("FileToPrompt", fileData);
+        }
+    }
+
+    window.PromptHelpers = PromptHelpers;
+
+    window.fileToPrompt = (dotnetHelper, file) => {
+        dotnetHelper.invokeMethodAsync("FileToPrompt", file);
+    }
+
+</script>
 </body>
 
 </html>
