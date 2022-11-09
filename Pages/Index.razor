@@ -35,22 +35,22 @@
                 @foreach (var item in Tags.Select((value, index) => new { value, index }))
                 {
                     <tr class="body">
-                        <input type="hidden" @bind-value="item.value.Id" />
+                        <input type="hidden" @bind-value="item.value.Id"/>
                         <td>
                             <div class="cell">
-                                <input type="checkbox" id="word-enabled" tabindex="-1" checked="@item.value.Enabled" @oninput="e => OnWordEnableChanging(item.value.Id, e)" />
+                                <input type="checkbox" id="word-enabled" tabindex="-1" checked="@item.value.Enabled" @oninput="e => OnWordEnableChanging(item.value.Id, e)"/>
                             </div>
                         </td>
                         <td>
                             <div class="cell">
                                 <input class="form-input" type="text" id="word" @bind-value="item.value.Word"
-                                       @oninput="e => OnWordChanging(item.value.Id, e)" placeholder="Enter your tag" />
+                                       @oninput="e => OnWordChanging(item.value.Id, e)" placeholder="Enter your tag"/>
                             </div>
                         </td>
                         <td>
                             <div class="cell">
                                 <input type="number" id="StrengthLevel" @bind-value="item.value.StrengthLevel"
-                                       @oninput="e => OnEmphasisChanging(item.value.Id, e)" tabindex="-1" />
+                                       @oninput="e => OnEmphasisChanging(item.value.Id, e)" tabindex="-1"/>
                             </div>
                         </td>
                         <td>
@@ -59,23 +59,31 @@
                                     @if (item.index != 0)
                                     {
                                         <button class="btn" type="button" @onclick="() => MoveUp(item.value)"
-                                                tabindex="-1">up</button>
+                                                tabindex="-1">
+                                            up
+                                        </button>
                                     }
                                 </div>
                                 <div>
                                     @if (item.index != Tags.Count() - 1)
                                     {
                                         <button class="btn" type="button" @onclick="() => MoveDown(item.value)"
-                                                tabindex="-1">down</button>
+                                                tabindex="-1">
+                                            down
+                                        </button>
                                     }
                                 </div>
                                 <div>
                                     <button class="btn" type="button" @onclick="() => AddTag(item.value)"
-                                            tabindex="-1">add</button>
+                                            tabindex="-1">
+                                        add
+                                    </button>
                                 </div>
                                 <div>
                                     <button class="btn" type="button" @onclick="() => RemoveTag(item.value)"
-                                            tabindex="-1">remove</button>
+                                            tabindex="-1">
+                                        remove
+                                    </button>
                                 </div>
                             </div>
                         </td>
@@ -85,21 +93,29 @@
             </table>
         }
     </div>
-    
-    <InputFile id="uploadFile" OnChange="OnInputFileChange" style="display: none;" />
+
+    <InputFile id="uploadFile" OnChange="OnInputFileChange" style="display: none;"/>
+
 
 </FileDropZone>
 
+<div class="loader" style="@(_showLoader? "" : "display: none;")">
+
+</div>
+
 @code {
+
     [Inject]
     public IJSRuntime JSRuntime { get; set; }
+
     private string Prompt { get; set; } = string.Empty;
     private List<Tag> Tags { get; set; } = new List<Tag>();
     private DotNetObjectReference<Index>? dotnetHelper;
 
+    private bool _showLoader = false;
+
     protected override Task OnInitializedAsync()
     {
-        
         for (var i = 0; i < 5; i++)
         {
             Tags.Add(new Tag());
@@ -112,7 +128,6 @@
     {
         dotnetHelper = DotNetObjectReference.Create(this);
         await JSRuntime.InvokeVoidAsync("PromptHelpers.setDotNetHelper", dotnetHelper);
-        
     }
 
     private void AddTag()
@@ -217,9 +232,11 @@
 
     private async Task OnInputFileChange(InputFileChangeEventArgs args)
     {
+        _showLoader = true;
+        StateHasChanged();
         await JSRuntime.InvokeAsync<string>("loadFile");
     }
-    
+
 
     [JSInvokable]
     public void FileToPrompt(string image)
@@ -229,6 +246,8 @@
         var r = Parser.ParseImage(ms);
         Prompt = r.Prompt;
         ImportPrompt(Prompt);
+        _showLoader = false;
         StateHasChanged();
     }
+
 }
