@@ -22,7 +22,6 @@ footer {
     bottom: 0;
     width: calc(100% - 2em);
     height: 50px;
-    padding-left: 10px;
     background-color: #0f111e;
     color: #9e9e9e;
     padding: 0 1em 0 1em;
@@ -54,8 +53,13 @@ textarea.prompt {
     justify-items: center;
 }
 
-.tag-area {
-    max-height: 80%;
+.column-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+}
+
+.tag-column {
+    max-height: 90vh;
     overflow-y: auto;
 }
 
