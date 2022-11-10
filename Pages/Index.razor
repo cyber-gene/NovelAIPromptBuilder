@@ -1,6 +1,7 @@
 ﻿@using Toolbelt.Blazor.FileDropZone
-@using NovelAIPromptBuilder.Models
 @using NovelAIPromptParser
+@using NovelAIPromptParser.Entity
+@using Tag = NovelAIPromptBuilder.Models.Tag
 @page "/"
 
 <PageTitle>NovelAI prompt builder</PageTitle>
@@ -106,9 +107,59 @@
 
                 @if (!string.IsNullOrWhiteSpace(base64image))
                 {
+                    <div style="margin: 0 0 0.5em 0">
+                        <label>Seed</label>
+                        <input class="setting" type="text" readonly @bind-value="ImageData.Seed"/>
+                    </div>
                     <img class="preview" src="@base64image" alt=""/>
                 }
             </div>
+        </div>
+        <div class="details-container">
+            @if (ImageData != null)
+            {
+                <details>
+                    <summary>Settings</summary>
+                    <div class="settings-container">
+                        <div>
+                            <label>Image Resolution</label>
+                        </div>
+                        <div>
+                            <input class="setting" type="text" readonly @bind-value="ImageData.Width"/> x <input class="setting" type="text" @bind-value="ImageData.Height"/>
+                        </div>
+                        <div>
+                            <label>Undesired Content</label>
+                        </div>
+                        <div>
+                            <textarea class="setting" style="width: 100%" readonly="readonly">@ImageData.UndesiredContent</textarea>
+                        </div>
+                        <div>
+                            <label>Steps</label>
+                        </div>
+                        <div>
+                            <input class="setting" type="text" readonly @bind-value="ImageData.Steps"/>
+                        </div>
+                        <div>
+                            <label>Scale</label>
+                        </div>
+                        <div>
+                            <input class="setting" type="text" readonly @bind-value="ImageData.Scale"/>
+                        </div>
+                        <div>
+                            <label>Seed</label>
+                        </div>
+                        <div>
+                            <input class="setting" type="text" readonly @bind-value="ImageData.Seed"/>
+                        </div>
+                        <div>
+                            <label>Sampler</label>
+                        </div>
+                        <div>
+                            <input class="setting" type="text" readonly @bind-value="ImageData.Sampler"/>
+                        </div>
+                    </div>
+                </details>
+            }
         </div>
     </div>
     <footer>
@@ -127,6 +178,8 @@
 
     private string Prompt { get; set; } = string.Empty;
     private List<Tag> Tags { get; set; } = new List<Tag>();
+    private ParseResult? ImageData;
+    
     private DotNetObjectReference<Index>? dotnetHelper;
     private string base64image = string.Empty;
 
@@ -247,6 +300,7 @@
         Tags.Clear();
         Prompt = "";
         base64image = "";
+        ImageData = null;
     }
 
     private async Task OnInputFileChange(InputFileChangeEventArgs args)
@@ -263,8 +317,8 @@
         base64image = image;
         var data = image.Split(',');
         var ms = new MemoryStream(Convert.FromBase64String(data[1]));
-        var r = Parser.ParseImage(ms);
-        Prompt = r.Prompt;
+        ImageData = Parser.ParseImage(ms);
+        Prompt = ImageData.Prompt;
         ImportPrompt(Prompt);
         _showLoader = false;
         StateHasChanged();
