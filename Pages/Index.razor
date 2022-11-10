@@ -6,107 +6,119 @@
 <PageTitle>NovelAI prompt builder</PageTitle>
 
 <FileDropZone class="file-drop-zone">
-
-    <h1>NovelAI prompt builder</h1>
-    <div class="prompt-area">
-        <textarea class="prompt" id="prompt" @bind="Prompt"
+    <header>
+        <h1>NovelAI prompt builder</h1>
+    </header>
+    <div class="main-content">
+        <div class="prompt-container">
+            <div class="prompt-column">
+                <textarea class="prompt" id="prompt" @bind="Prompt"
         placeholder="Enter your prompt and import / Enter your tags below. "></textarea>
-        <button class="btn" type="button" @onclick="Import" tabindex="-1">Import</button>
-        <button class="btn" type="button" @onclick="Clear" tabindex="-1">Clear</button>
-    </div>
+            </div>
+            <div class="prompt-button-column">
+                <button class="btn" type="button" @onclick="Import" tabindex="-1">Import</button>
+                <button class="btn" type="button" @onclick="Clear" tabindex="-1">Clear</button>
+            </div>
+        </div>
 
-    <div class="column-container">
-        <div class="tag-column">
-            @if (Tags.Count == 0)
-            {
-                <button type="button" @onclick="AddTag">Add tag</button>
-            }
-            else
-            {
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th scope="col">Enabled</th>
-                        <th scope="col">Tag</th>
-                        <th scope="col">Strength</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @foreach (var item in Tags.Select((value, index) => new { value, index }))
-                    {
-                        <tr class="body">
-                            <input type="hidden" @bind-value="item.value.Id"/>
-                            <td>
-                                <div class="cell">
-                                    <input type="checkbox" id="word-enabled" tabindex="-1" checked="@item.value.Enabled" @oninput="e => OnWordEnableChanging(item.value.Id, e)"/>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="cell">
-                                    <input class="form-input" type="text" id="word" @bind-value="item.value.Word"
-                                           @oninput="e => OnWordChanging(item.value.Id, e)" placeholder="Enter your tag"/>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="cell">
-                                    <input type="number" id="StrengthLevel" @bind-value="item.value.StrengthLevel"
-                                           @oninput="e => OnEmphasisChanging(item.value.Id, e)" tabindex="-1"/>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="button-area">
-                                    <div>
-                                        @if (item.index != 0)
-                                        {
-                                            <button class="btn" type="button" @onclick="() => MoveUp(item.value)"
-                                                    tabindex="-1">
-                                                up
-                                            </button>
-                                        }
-                                    </div>
-                                    <div>
-                                        @if (item.index != Tags.Count() - 1)
-                                        {
-                                            <button class="btn" type="button" @onclick="() => MoveDown(item.value)"
-                                                    tabindex="-1">
-                                                down
-                                            </button>
-                                        }
-                                    </div>
-                                    <div>
-                                        <button class="btn" type="button" @onclick="() => AddTag(item.value)"
-                                                tabindex="-1">
-                                            add
-                                        </button>
-                                    </div>
-                                    <div>
-                                        <button class="btn" type="button" @onclick="() => RemoveTag(item.value)"
-                                                tabindex="-1">
-                                            remove
-                                        </button>
-                                    </div>
-                                </div>
-                            </td>
+        <div class="column-container">
+            <div class="tag-column">
+                @if (Tags.Count == 0)
+                {
+                    <button type="button" @onclick="AddTag">Add tag</button>
+                }
+                else
+                {
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th scope="col">Enabled</th>
+                            <th scope="col">Tag</th>
+                            <th scope="col">Strength</th>
+                            <th></th>
                         </tr>
-                    }
-                    </tbody>
-                </table>
-            }
-        </div>
+                        </thead>
+                        <tbody>
+                        @foreach (var item in Tags.Select((value, index) => new { value, index }))
+                        {
+                            <tr class="body">
+                                <input type="hidden" @bind-value="item.value.Id"/>
+                                <td>
+                                    <div class="cell">
+                                        <input type="checkbox" id="word-enabled" tabindex="-1" checked="@item.value.Enabled" @oninput="e => OnWordEnableChanging(item.value.Id, e)"/>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="cell">
+                                        <input class="form-input" type="text" id="word" @bind-value="item.value.Word"
+                                               @oninput="e => OnWordChanging(item.value.Id, e)" placeholder="Enter your tag"/>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="cell">
+                                        <input type="number" id="StrengthLevel" @bind-value="item.value.StrengthLevel"
+                                               @oninput="e => OnEmphasisChanging(item.value.Id, e)" tabindex="-1"/>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="button-area">
+                                        <div>
+                                            @if (item.index != 0)
+                                            {
+                                                <button class="btn" type="button" @onclick="() => MoveUp(item.value)"
+                                                        tabindex="-1">
+                                                    up
+                                                </button>
+                                            }
+                                        </div>
+                                        <div>
+                                            @if (item.index != Tags.Count() - 1)
+                                            {
+                                                <button class="btn" type="button" @onclick="() => MoveDown(item.value)"
+                                                        tabindex="-1">
+                                                    down
+                                                </button>
+                                            }
+                                        </div>
+                                        <div>
+                                            <button class="btn" type="button" @onclick="() => AddTag(item.value)"
+                                                    tabindex="-1">
+                                                add
+                                            </button>
+                                        </div>
+                                        <div>
+                                            <button class="btn" type="button" @onclick="() => RemoveTag(item.value)"
+                                                    tabindex="-1">
+                                                remove
+                                            </button>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                }
+            </div>
 
-        <div class="img-column">
-        <InputFile id="uploadFile" OnChange="OnInputFileChange" style="display: none;"/>
+            <div class="img-column">
+                <InputFile id="uploadFile" OnChange="OnInputFileChange" style="display: none;"/>
 
-        @if (!string.IsNullOrWhiteSpace(base64image))
-        {
-            <img src="@base64image" alt=""/>
-        }
+                @if (!string.IsNullOrWhiteSpace(base64image))
+                {
+                    <img class="preview" src="@base64image" alt=""/>
+                }
+            </div>
         </div>
     </div>
-
+    <footer>
+        <span class="footer-text">
+            Copyright &copy; 2022 <a href="https://github.com/cyber-gene">cybergene</a> All rights
+            reserved.
+        </span>
+        <span class="footer-text">Fork me on <a href="https://github.com/cyber-gene/NovelAIPromptBuilder">Github</a></span>
+    </footer>
 </FileDropZone>
-
 
 @code {
 
