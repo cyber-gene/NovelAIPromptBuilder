@@ -85,6 +85,16 @@ textarea.prompt {
     
 }
 
+.details-container {
+    padding: 0 2em 2em 2em;
+}
+
+.settings-container {
+    display: grid;
+    grid-template-columns: 1fr 6fr;
+    margin: 0.5em 0 0 2em;
+}
+
 button {
     background-color: rgb(19, 21, 44);
     color: rgb(245, 243, 194);
@@ -107,6 +117,16 @@ input#word {
 input#EmphasisLevel {
     width: 5em;
     text-align: center;
+}
+
+input.setting {
+    text-align: center;
+}
+
+textarea.setting {
+    width: 100%;
+    height: auto;
+    min-height: 3em;
 }
 
 a {
