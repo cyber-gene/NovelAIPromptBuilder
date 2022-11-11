@@ -103,7 +103,7 @@
             </div>
 
             <div class="img-column">
-                <InputFile id="uploadFile" OnChange="OnInputFileChange" style="display: none;"/>
+                <InputFile id="uploadFile" OnChange="OnInputFileChange" accept="image/png" style="display: none;"/>
 
                 @if (!string.IsNullOrWhiteSpace(base64image))
                 {
