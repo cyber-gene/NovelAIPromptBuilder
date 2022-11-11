@@ -39,7 +39,7 @@ input {
     background: rgb(14, 15, 33);
     color: #e6e6e6;
     border: 1px solid rgb(34, 37, 63);
-    border-radius: 3px 0px 0px 3px;
+    border-radius: 3 p;
     height: 1.8em;
 }
 
@@ -47,7 +47,7 @@ textarea {
     background: rgb(14, 15, 33);
     color: #e6e6e6;
     border: 1px solid rgb(34, 37, 63);
-    border-radius: 3px 0px 0px 3px;
+    border-radius: 3px;
 }
 
 textarea.prompt {
