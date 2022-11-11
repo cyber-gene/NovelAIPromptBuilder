@@ -1,8 +1,8 @@
-﻿@using Toolbelt.Blazor.FileDropZone
-@using NovelAIPromptParser
+﻿@page "/"
 @using NovelAIPromptParser.Entity
+@using Toolbelt.Blazor.FileDropZone
 @using Tag = NovelAIPromptBuilder.Models.Tag
-@page "/"
+@using NovelAIPromptParser
 
 <PageTitle>NovelAI prompt builder</PageTitle>
 
@@ -179,7 +179,7 @@
     private string Prompt { get; set; } = string.Empty;
     private List<Tag> Tags { get; set; } = new List<Tag>();
     private ParseResult? ImageData;
-    
+
     private DotNetObjectReference<Index>? dotnetHelper;
     private string base64image = string.Empty;
 
@@ -258,7 +258,7 @@
     {
         var idx = Tags.IndexOf(target);
         Tags.Remove(target);
-        Tags.Insert(idx, target);
+        Tags.Insert(idx + 1, target);
     }
 
     private void UpdatePrompt()
