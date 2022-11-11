@@ -91,6 +91,7 @@ textarea.prompt {
 
 .settings-container {
     display: grid;
+    row-gap: 0.25em;
     grid-template-columns: 1fr 6fr;
     margin: 0.5em 0 0 2em;
 }
